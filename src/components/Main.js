@@ -1,4 +1,4 @@
-import React from "react";
+import React, {Fragment} from "react";
 import Countries from "./Countries";
 import "../styles/Main.css";
 
@@ -6,9 +6,11 @@ function Main() {
 
 
     return(
-        <main>
-            <Countries />
-        </main>
+        <Fragment>
+            <main>
+                <Countries />
+            </main>
+        </Fragment>
     );
 
 }

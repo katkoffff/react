@@ -7,10 +7,3 @@ header {
     justify-content: center;
     align-items: center;
 }
-
-header .some-button {
-    padding: 10px 1px;
-    color: green;
-    border-radius: 10px;
-    border: 2px solid grey;
-}

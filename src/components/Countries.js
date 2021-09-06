@@ -1,66 +1,40 @@
-import React, {useState, Fragment} from "react";
+import React, {useState, useEffect, Fragment} from "react";
 import axios from "axios";
-import Card from './Card';
+import Weather from "./Weather";
 
 function Countries() {
-    const [countries, setCountries] = useState([]);
+    const [countries, setCountries] = useState({isLoaded: false, items: []});
     const [currentCountries, setCurrentCountries] = useState("");
     const handleChange = () => {
-        setCurrentCountries(document.getElementById("chooseCountry").value);
+        setCurrentCountries(document.getElementById("chooseCountry").value)
     };
-    let [weather, setNewWeather] = useState({});
-    const handleClick = () => {
-        if (currentCountries != "") {
-            let currData = countries.filter(item => item.capital==currentCountries);
-            let lat = currData[0].latlng[0] + "";
-            let lon = currData[0].latlng[1] + "";
 
-            let weatherURL = "https://api.openweathermap.org/data/2.5/onecall?lat="+lat+"&lon="+lon+"&lang=ru&units=metric&exclude=alerts&APPID=c1ac084383e6c7be5e331daf8e8f1e0f";
-            axios.get(weatherURL).then(res => {
-            setNewWeather(res);
-            });
-            if ("data" in weather) {
-                console.log(weather.data.daily)
-                }
-            else {
-                alert("данные не получены, жми ишо раз!")
-            }
+    useEffect(() => {
+        updateItems();
+      }, [countries.isLoaded]);
 
-        } else {
-            console.log("Не выбрана страна!!!");
-        }
-    };
-    /*formatCards = () => {
-                    return weather.data.daily.map((day, index) => <Card day={day} key={index}/>)
-                  }*/
-    if (!countries.length) {
+    const updateItems =() => {
         axios.get("https://restcountries.eu/rest/v2/all").then(res => {
-            setCountries(res.data);
-        });
+            setCountries({isLoaded: true, items: res.data});
+
+        })
     }
-    return (
+    return countries.isLoaded ? (
         <Fragment>
             <div>Выберите город</div>
-            <div>
-                <select id="chooseCountry" onFocus={handleChange} onChange={handleChange}>
-                    {countries.map(country => <option key={country.alpha3Code}>{country.capital}</option>)}
-                </select>
-            </div>
 
             <div>
-                <button onClick={handleClick}>
-                        Получить погоду
-                </button>
+                <select id="chooseCountry" onFocus={handleChange} onChange={handleChange} autoFocus>
+                    {countries.items.map(country => <option key={country.alpha3Code}>{country.capital}</option>)}
+                </select>
             </div>
 
             <div>
                 <h2>погода в городе: {currentCountries}</h2>
             </div>
-
-            <Card weather={weather} />
-
+            <Weather country={countries.items.filter(item => item.capital==currentCountries)} />
         </Fragment>
-    );
+    ) : "loading...";
 }
 
 export default Countries;
